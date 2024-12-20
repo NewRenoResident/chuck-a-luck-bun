@@ -10,57 +10,42 @@ export function chuckALuck() {
   console.log("\n");
 
   let money = 500;
-
   let gameRunning = true;
 
   function playRound() {
-    if (!gameRunning) return;
+    if (!gameRunning) return false;
 
     console.log(`YOU HAVE $${money}. MAKE A BET.`);
 
-    const betPrompt = () => {
-      const bet = prompt("Enter your bet:");
-      if (bet === null) {
-        return null;
-      }
-      return bet ? parseInt(bet) : 0;
-    };
-
-    let bet = betPrompt();
-
-    if (bet === null) {
+    const bet = prompt("Enter your bet:");
+    if (bet === null || bet === "") {
       console.log("Game ended. Thanks for playing!");
       gameRunning = false;
-      return;
+      return false;
     }
-    if (bet > money) {
+
+    const betAmount = bet ? parseInt(bet) : 0;
+
+    if (betAmount > money) {
       console.log("I DON'T TAKE I.O.U's !!!!");
-      playRound();
-      return;
+      return true;
     }
 
-    if (bet <= 0 || Math.floor(bet * 100) !== bet * 100) {
+    if (betAmount <= 0 || Math.floor(betAmount * 100) !== betAmount * 100) {
       console.log("DON'T GET CUTE!!!");
-      playRound();
-      return;
+      return true;
     }
 
-    const numberPrompt = () => {
-      const num = prompt("CHOOSE A NUMBER");
-      return num ? parseInt(num) : 0;
-    };
+    const num = prompt("CHOOSE A NUMBER");
+    const chosenNumber = num ? parseInt(num) : 0;
 
-    let chosenNumber;
-    while (true) {
-      chosenNumber = numberPrompt();
-      if (
-        Number.isInteger(chosenNumber) &&
-        chosenNumber > 0 &&
-        chosenNumber < 7
-      ) {
-        break;
-      }
+    if (
+      !Number.isInteger(chosenNumber) ||
+      chosenNumber <= 0 ||
+      chosenNumber > 6
+    ) {
       console.log("CHEATER!!!!!");
+      return true;
     }
 
     const dice = [
@@ -76,25 +61,25 @@ export function chuckALuck() {
     console.log(`YOU'VE MATCHED ${matches} TIMES.`);
 
     if (matches === 0) {
-      console.log(`YOU LOSE $${bet}`);
-      money -= bet;
+      console.log(`YOU LOSE $${betAmount}`);
+      money -= betAmount;
     } else {
-      const winnings = bet * matches;
+      const winnings = betAmount * matches;
       console.log(`YOU'VE WON $${winnings}`);
       money += winnings;
     }
 
     if (money <= 0) {
       console.log("\nGAME OVER!");
-      return;
+      gameRunning = false;
+      return false;
     }
 
-    setTimeout(playRound, 1000);
+    return true;
   }
 
-  playRound();
+  while (gameRunning) {
+    const shouldContinue = playRound();
+    if (!shouldContinue) break;
+  }
 }
-
-setTimeout(() => {
-  chuckALuck();
-}, 3000);
