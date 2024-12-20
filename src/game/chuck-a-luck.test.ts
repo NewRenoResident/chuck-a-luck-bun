@@ -10,12 +10,10 @@ describe("Chuck-A-Luck Game", () => {
     consoleLogs = [];
     promptIndex = 0;
 
-    // Mock console.log
     global.console.log = (message: any) => {
       consoleLogs.push(String(message));
     };
 
-    // Mock prompt
     global.prompt = () => {
       const response = promptResponses[promptIndex];
       promptIndex++;
@@ -24,7 +22,7 @@ describe("Chuck-A-Luck Game", () => {
   });
 
   test("should display correct initial messages", () => {
-    promptResponses = [null]; // End game immediately
+    promptResponses = [null];
     chuckALuck();
 
     expect(consoleLogs[0]).toContain("CHUCK-A-LUCK");
@@ -33,21 +31,21 @@ describe("Chuck-A-Luck Game", () => {
   });
 
   test("should handle invalid bet input", () => {
-    promptResponses = ["abc", null]; // Invalid bet, then end game
+    promptResponses = ["abc", null];
     chuckALuck();
 
     expect(consoleLogs).toContain("DON'T GET CUTE!!!");
   });
 
   test("should handle bet larger than current money", () => {
-    promptResponses = ["1000", null]; // Too large bet, then end game
+    promptResponses = ["1000", null];
     chuckALuck();
 
     expect(consoleLogs).toContain("I DON'T TAKE I.O.U's !!!!");
   });
 
   test("should handle invalid number choice", () => {
-    promptResponses = ["100", "7", null]; // Valid bet, invalid number, end game
+    promptResponses = ["100", "7", null];
     chuckALuck();
 
     expect(consoleLogs).toContain("CHEATER!!!!!");
@@ -55,9 +53,9 @@ describe("Chuck-A-Luck Game", () => {
 
   test("should correctly calculate winnings", () => {
     const originalRandom = Math.random;
-    Math.random = () => 0.5; // Will always roll 4
+    Math.random = () => 0.5;
 
-    promptResponses = ["100", "4", null]; // Bet 100, choose 4 (matching all dice), end game
+    promptResponses = ["100", "4", null];
     chuckALuck();
 
     expect(consoleLogs).toContain("YOU'VE WON $300");
@@ -67,9 +65,9 @@ describe("Chuck-A-Luck Game", () => {
 
   test("should correctly handle losing scenario", () => {
     const originalRandom = Math.random;
-    Math.random = () => 0; // Will always roll 1
+    Math.random = () => 0;
 
-    promptResponses = ["100", "6", null]; // Bet 100, choose 6 (no matches), end game
+    promptResponses = ["100", "6", null];
     chuckALuck();
 
     expect(consoleLogs).toContain("YOU LOSE $100");
@@ -79,9 +77,9 @@ describe("Chuck-A-Luck Game", () => {
 
   test("should end game when money runs out", () => {
     const originalRandom = Math.random;
-    Math.random = () => 0; // Will always roll 1
+    Math.random = () => 0;
 
-    promptResponses = ["500", "6"]; // Bet all money, choose 6 (no matches)
+    promptResponses = ["500", "6"];
     chuckALuck();
 
     expect(consoleLogs.join(" ")).toContain("GAME OVER!");
@@ -90,7 +88,7 @@ describe("Chuck-A-Luck Game", () => {
   });
 
   test("should handle game termination", () => {
-    promptResponses = [null]; // Simulate cancel/exit
+    promptResponses = [null];
     chuckALuck();
 
     expect(consoleLogs).toContain("Game ended. Thanks for playing!");
